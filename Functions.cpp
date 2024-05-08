@@ -436,67 +436,66 @@ void MatrixScreenPrintf(int x, int y, const Matrix4x4& matrix, const char* label
 //線
 void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix) {
 	const float kGridHalfWidth = 2.0f;									   // Gridの半分の幅
-	const uint32_t kSubdivision = 11;									   // 分割数
-	const float kGridEvery = (kGridHalfWidth * 2.0f) / float(kSubdivision);// 1つ分の長さ
+	const uint32_t kSubdivision = 20;									   // 分割数
+	//const float kGridEvery = (kGridHalfWidth * 2.0f) / float(kSubdivision);// 1つ分の長さ
 	// 奥から手前への線を順々に引いていく
-	//float x[kSubdivision] = {};
-	Vector3 kLocalGridXS[kSubdivision];
-	Vector3 kLocalGridXE[kSubdivision];
-	Vector3 screenGridXS[kSubdivision];
-	Vector3 screenGridXE[kSubdivision];
+	Vector3 kLocalGridXS;
+	Vector3 kLocalGridXE;
+	Vector3 screenGridXS;
+	Vector3 screenGridXE;
 
-	for (uint32_t xIndex = 0; xIndex < kSubdivision; ++xIndex) {
+	for (uint32_t xIndex = 0; xIndex <= kSubdivision; ++xIndex) {
 		//上の情報を使ってワールド座標系上の始点と終点を求めて
-		kLocalGridXS[xIndex].x =  xIndex* (kGridHalfWidth * 2.0f);
-		kLocalGridXE[xIndex].x =  xIndex* (kGridHalfWidth * 2.0f);
+		kLocalGridXS.x =  (xIndex - kSubdivision/2.0f) * (kGridHalfWidth * 2.0f);
+		kLocalGridXE.x =  (xIndex - kSubdivision/2.0f) * (kGridHalfWidth * 2.0f);
 
-		kLocalGridXS[xIndex].y = 0;//xIndex* (kGridHalfWidth * 2.0f);
-		kLocalGridXE[xIndex].y = 0;// xIndex* (kGridHalfWidth * 2.0f);
+		kLocalGridXS.y = 0;//xIndex* (kGridHalfWidth * 2.0f);
+		kLocalGridXE.y = 0;// xIndex* (kGridHalfWidth * 2.0f);
 
-		kLocalGridXS[xIndex].z = 0;//xIndex * (kGridHalfWidth * 2.0f);
-		kLocalGridXE[xIndex].z = kGridEvery * (kGridHalfWidth * 2.0f) * kSubdivision * 2.5f; // xIndex * (kGridHalfWidth * 2.0f);
+		kLocalGridXS.z = -(kSubdivision / 2.0f) * (kGridHalfWidth * 2.0f);//xIndex * (kGridHalfWidth * 2.0f);
+		kLocalGridXE.z = (-(kSubdivision / 2.0f) * (kGridHalfWidth * 2.0f))  +(kGridHalfWidth * 2.0f) * (kSubdivision); //* (kSubdivision - 1);; // xIndex * (kGridHalfWidth * 2.0f);
 
 		//スクリーン座標系まで変換をかける
-		Vector3 ndcGridXS = Transform(kLocalGridXS[xIndex], viewProjectionMatrix);
-		Vector3 ndcGridXE = Transform(kLocalGridXE[xIndex], viewProjectionMatrix);
+		Vector3 ndcGridXS = Transform(kLocalGridXS, viewProjectionMatrix);
+		Vector3 ndcGridXE = Transform(kLocalGridXE, viewProjectionMatrix);
 
-		screenGridXS[xIndex] = Transform(ndcGridXS, viewportMatrix);
-		screenGridXE[xIndex] = Transform(ndcGridXE, viewportMatrix);
+		screenGridXS = Transform(ndcGridXS, viewportMatrix);
+		screenGridXE= Transform(ndcGridXE, viewportMatrix);
 		//変換した座標を使って表示。色は薄い灰色(0xAAAAAAFF)、原点は黒ぐらいがいいが、何でもいい
-		if (xIndex == 5) {
-			Novice::DrawLine(int(screenGridXS[xIndex].x), int(screenGridXS[xIndex].y), int(screenGridXE[xIndex].x), int(screenGridXE[xIndex].y), 0x000000FF);
+		if (xIndex == kSubdivision/2) {
+			Novice::DrawLine(int(screenGridXS.x), int(screenGridXS.y), int(screenGridXE.x), int(screenGridXE.y), 0x000000FF);
 		}
 		else {
-			Novice::DrawLine(int(screenGridXS[xIndex].x), int(screenGridXS[xIndex].y), int(screenGridXE[xIndex].x), int(screenGridXE[xIndex].y), 0xAAAAAAFF);
+			Novice::DrawLine(int(screenGridXS.x), int(screenGridXS.y), int(screenGridXE.x), int(screenGridXE.y), 0xAAAAAAFF);
 		}
 	}
 
 	//左から右も同じように順々に引いていく
-	for (uint32_t zIndex = 0; zIndex < kSubdivision; ++zIndex) {
+	for (uint32_t zIndex = 0; zIndex <= kSubdivision; ++zIndex) {
 		//奥から手前が左右に変わるだけ
 	
 	//上の情報を使ってワールド座標系上の始点と終点を求めて
-		kLocalGridXS[zIndex].x = 0; //zIndex* (kGridHalfWidth * 2.0f);
-		kLocalGridXE[zIndex].x = kGridEvery * (kGridHalfWidth * 2.0f) * kSubdivision * 2.5f; //zIndex * (kGridHalfWidth * 2.0f);
+		kLocalGridXS.x = -(kSubdivision / 2.0f) * (kGridHalfWidth * 2.0f); //zIndex* (kGridHalfWidth * 2.0f);
+		kLocalGridXE.x = (-(kSubdivision / 2.0f) * (kGridHalfWidth * 2.0f)) + (kGridHalfWidth * 2.0f) *(kSubdivision);// +kGridEvery * kSubdivision; //zIndex * (kGridHalfWidth * 2.0f);
 
-		kLocalGridXS[zIndex].y = 0;//xIndex* (kGridHalfWidth * 2.0f);
-		kLocalGridXE[zIndex].y = 0;// xIndex* (kGridHalfWidth * 2.0f);
+		kLocalGridXS.y = 0;//xIndex* (kGridHalfWidth * 2.0f);
+		kLocalGridXE.y = 0;// xIndex* (kGridHalfWidth * 2.0f);
 
-		kLocalGridXS[zIndex].z = zIndex * (kGridHalfWidth * 2.0f);
-		kLocalGridXE[zIndex].z = zIndex * (kGridHalfWidth * 2.0f);
+		kLocalGridXS.z = (zIndex - kSubdivision/2.0f) * (kGridHalfWidth * 2.0f);
+		kLocalGridXE.z = (zIndex - kSubdivision/2.0f) * (kGridHalfWidth * 2.0f);
 
 		//スクリーン座標系まで変換をかける
-		Vector3 ndcGridXS = Transform(kLocalGridXS[zIndex], viewProjectionMatrix);
-		Vector3 ndcGridXE = Transform(kLocalGridXE[zIndex], viewProjectionMatrix);
+		Vector3 ndcGridXS = Transform(kLocalGridXS, viewProjectionMatrix);
+		Vector3 ndcGridXE = Transform(kLocalGridXE, viewProjectionMatrix);
 
-		screenGridXS[zIndex] = Transform(ndcGridXS, viewportMatrix);
-		screenGridXE[zIndex] = Transform(ndcGridXE, viewportMatrix);
+		screenGridXS = Transform(ndcGridXS, viewportMatrix);
+		screenGridXE = Transform(ndcGridXE, viewportMatrix);
 		//変換した座標を使って表示。色は薄い灰色(0xAAAAAAFF)、原点は黒ぐらいがいいが、何でもいい
-		if (zIndex == 5) {
-			Novice::DrawLine(int(screenGridXS[zIndex].x), int(screenGridXS[zIndex].y), int(screenGridXE[zIndex].x), int(screenGridXE[zIndex].y), 0x000000FF);
+		if (zIndex == kSubdivision / 2) {
+			Novice::DrawLine(int(screenGridXS.x), int(screenGridXS.y), int(screenGridXE.x), int(screenGridXE.y), 0x000000FF);
 		}
 		else {
-			Novice::DrawLine(int(screenGridXS[zIndex].x), int(screenGridXS[zIndex].y), int(screenGridXE[zIndex].x), int(screenGridXE[zIndex].y), 0xAAAAAAFF);
+			Novice::DrawLine(int(screenGridXS.x), int(screenGridXS.y), int(screenGridXE.x), int(screenGridXE.y), 0xAAAAAAFF);
 		}
 	}
 
