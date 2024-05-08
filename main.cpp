@@ -22,12 +22,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//回転
 	Vector3 rotate{};
 	//カメラポジション
-	Vector3 cameraPosition{ 0.0f,1.9f,-6.49f };
+	Vector3 cameraPosition{ 0.0f,15.9f,-61.49f };
 	Vector3 cameraRotate{ 0.26f,0.0f,0.0f };
 
 	Sphere sphere{};
-	sphere.center = { 10.0f,10.0f,10.0f };
-	sphere.radius = { 3.0f};
+	sphere.center = { 0.0f,0.0f,0.0f };
+	sphere.radius = { 9.0f};
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -41,6 +41,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓更新処理ここから
 		///
+
+		
 
 		if (keys[DIK_A]) {
 			cameraPosition.x -= 2;
@@ -93,6 +95,23 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		DrawGrid(worldViewProjectionMatrix, viewportMatrix);
 
 		DrawSphere(sphere, worldViewProjectionMatrix, viewportMatrix, 0xAAAAAAFF);
+
+
+
+
+
+
+
+
+		ImGui::Begin("Window");
+		ImGui::DragFloat3("CameraTranslate", &cameraPosition.x, 0.01f);
+		ImGui::DragFloat3("CameraTranslate", &cameraRotate.x, 0.01f);
+		ImGui::DragFloat3("SphereCenter", &sphere.center.x, 0.01f);
+		ImGui::DragFloat("SphereRadius", &sphere.radius, 0.01f);
+		ImGui::End();
+
+
+
 
 		///
 		/// ↑描画処理ここまで

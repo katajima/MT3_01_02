@@ -527,6 +527,11 @@ void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, con
 			a = { sphere.radius * std::cos(lat) * std::cos(lon)                                 ,sphere.radius * std::sin(lat)                             ,sphere.radius * std::cos(lat) * std::sin(lon) };
 			b = { sphere.radius * std::cos(lat + (pi / float(kSubdivision))) * std::cos(lon)    ,sphere.radius * std::sin(lat + (pi / float(kSubdivision))),sphere.radius * std::cos(lat + (pi / float(kSubdivision))) * std::sin(lon) };
 			c = { sphere.radius * std::cos(lat) * std::cos(lon + (2 * pi / float(kSubdivision))),sphere.radius * std::sin(lat)                             ,sphere.radius * std::cos(lat) * std::sin(lon + (2 * pi / float(kSubdivision)))};
+			a = { a.x + sphere.center.x,a.y + sphere.center.y,a.z + sphere.center.z };
+			b = { b.x + sphere.center.x,b.y + sphere.center.y,b.z + sphere.center.z };
+			c = { c.x + sphere.center.x,c.y + sphere.center.y,c.z + sphere.center.z };
+			
+			
 			//a,b,cをScureen座標まで変換
 			Vector3 ndcGridA = Transform(a, viewProjectionMatrix);
 			Vector3 ndcGridB = Transform(b, viewProjectionMatrix);
