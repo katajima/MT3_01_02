@@ -25,6 +25,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 cameraPosition{ 0.0f,1.9f,-6.49f };
 	Vector3 cameraRotate{ 0.26f,0.0f,0.0f };
 
+	Sphere sphere{};
+	sphere.center = { 10.0f,10.0f,10.0f };
+	sphere.radius = { 3.0f};
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -88,6 +91,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 
 		DrawGrid(worldViewProjectionMatrix, viewportMatrix);
+
+		DrawSphere(sphere, worldViewProjectionMatrix, viewportMatrix, 0xAAAAAAFF);
 
 		///
 		/// ↑描画処理ここまで

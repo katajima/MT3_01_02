@@ -1,6 +1,5 @@
 #include<Functions.h>
-#include<cmath>
-#include<assert.h>
+
 
 //行列の積
 Matrix4x4 Multiply(const Matrix4x4& v1, const Matrix4x4& v2) {
@@ -504,25 +503,44 @@ void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMa
 
 }
 //円
-void DrawSphere(const Sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color)
+void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color)
 {
 	float pi = 3.14f;
-	const uint32_t kSubdivsion = 0; //分割数
-	const float kLonEvery = 0;      //経度分割1つ分の角度
-	const float kLatEvery = 0;      //緯度分割1つ分の角度
+	const uint32_t kSubdivision = 16; //分割数
+	const float kLonEvery = pi * 2 /float(kSubdivision);      //経度分割1つ分の角度
+	const float kLatEvery = pi * 2 / float(kSubdivision);      //緯度分割1つ分の角度
+
+
+
+	Vector3 screenGridA;
+	Vector3 screenGridB;
+	Vector3 screenGridC;
+	
 	//　緯度の方向に分割　-π/2 ～ π/2
-	for (uint32_t latIndex = 0; latIndex < kSubdivsion; ++latIndex) {
+	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
 		float lat = -pi / 2.0f + kLatEvery * latIndex;// 現在の緯度
 		//　経度の方向に分割　0 ～ 2π
-		for (uint32_t lonIndex = 0; lonIndex < kSubdivsion; ++lonIndex) {
+		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
 			float lon = lonIndex * kLonEvery;// 現在の経度
 			//world座標系でのa,b,cを求める
+			//Matrix4x4 worldMatrix = 
 			Vector3 a, b, c;
+			a = { sphere.radius * std::cos(lat) * std::cos(lon)                                 ,sphere.radius * std::sin(lat)                             ,sphere.radius * std::cos(lat) * std::sin(lon) };
+			b = { sphere.radius * std::cos(lat + (pi / float(kSubdivision))) * std::cos(lon)    ,sphere.radius * std::sin(lat + (pi / float(kSubdivision))),sphere.radius * std::cos(lat + (pi / float(kSubdivision))) * std::sin(lon) };
+			c = { sphere.radius * std::cos(lat) * std::cos(lon + (2 * pi / float(kSubdivision))),sphere.radius * std::sin(lat)                             ,sphere.radius * std::cos(lat) * std::sin(lon + (2 * pi / float(kSubdivision)))};
 			//a,b,cをScureen座標まで変換
+			Vector3 ndcGridA = Transform(a, viewProjectionMatrix);
+			Vector3 ndcGridB = Transform(b, viewProjectionMatrix);
+			Vector3 ndcGridC = Transform(c, viewProjectionMatrix);
+
+			screenGridA = Transform(ndcGridA, viewportMatrix);
+			screenGridB = Transform(ndcGridB, viewportMatrix);
+			screenGridC = Transform(ndcGridC, viewportMatrix);
 			//ac,bcで線を引く
 			
-			//Novice::DrawLine(, color);
-			//Novice::DrawLine(, color);
+			Novice::DrawLine(int(screenGridA.x),int(screenGridA.y),int(screenGridB.x),int(screenGridB.y), color);
+			Novice::DrawLine(int(screenGridA.x),int(screenGridA.y),int(screenGridC.x),int(screenGridC.y), color);
+			
 		}
 	}
 }

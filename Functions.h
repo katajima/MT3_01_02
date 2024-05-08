@@ -1,5 +1,7 @@
 #pragma once
 #include <Novice.h>
+#include<cmath>
+#include<assert.h>
 
 static const int kColumnWidth = 60;
 
@@ -59,4 +61,4 @@ void MatrixScreenPrintf(int x, int y, const Matrix4x4& matrix, const char* label
 //線
 void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix);
 //円
-void DrawSphere(const Sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
